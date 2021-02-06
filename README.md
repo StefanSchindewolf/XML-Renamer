@@ -33,6 +33,34 @@ In case you want to work on files automatically or by a schedule, you can either
   - Example: ERROR_NO_CREATE_DATE
   
 # Example: integration with System.d
-Let's say we have a user "renamer" with the usual home directory. Every now and then (we don't know when exactly) the user stores a file in his home directory under "/home/renamer/input". 
-1. 
-1. 
+Let's say we have a user _renamer_ with the usual home directory. Every now and then (we don't know when exactly) the user stores a file in his home directory under _/home/renamer/input_ and wants to collect the result from _/home/renamer/output_.
+
+1. Switch to folder _/etc/systemd/system_ and create the required system.d files:
+    - rename.path
+    
+        `
+        [Unit]
+        Description=This service is meant to monitor /home/renamer/input for incoming files and rename and moving those files.
+        [Path]
+        DirectoryNotEmpty=/home/renamer/input
+        Unit=rename.service
+        [Install]
+        WantedBy=multi-user.target
+        `
+        
+    - rename.service
+    
+        `
+        [Unit]
+        Description=This service renames XML-Files
+        StartLimitIntervalSec=5
+        [Service]
+        Type=simple
+        ExecStart=/home/renamer/rename.sh
+        [Install]
+        WantedBy=multi-user.target
+        `
+        
+1. Add the service to system.d "*.wants" folder of your choice
+1. Put the XML file into the "input" folder
+1. Collect the result from the "output" folder
